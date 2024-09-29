@@ -12,10 +12,12 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-
+enum filterList {BBC,ARY,AlJazeera,CNN,reuters}
 class _HomeScreenState extends State<HomeScreen> {
   NewsViewModel newsViewModel = NewsViewModel();
   final format=DateFormat('MMMM dd,yyyy');
+filterList ? selectedMenu;
+String name='bbc';
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,53 @@ class _HomeScreenState extends State<HomeScreen> {
         .width;
     return Scaffold(
         appBar: AppBar(
+          actions: [
+            PopupMenuButton<filterList>(
+              initialValue: selectedMenu,
+                icon: Icon(Icons.more_vert,color: Colors.black,),
+                onSelected: (filterList item){
+                if(filterList.BBC.name==item.name){
+                  name='bbc-news';
+                }
+                if(filterList.ARY.name==item.name){
+                  name='ary-news';
+                }
+                if(filterList.AlJazeera.name==item.name){
+                  name='al-jazeera-english';
+                }
+                if(filterList.CNN.name==item.name){
+                  name='cnn';
+                }
+                if(filterList.reuters.name==item.name){
+                  name='reuters';
+                }
+                setState(() {
+                  selectedMenu=item;
+                });
+                },
+                itemBuilder: (BuildContext context)=><PopupMenuEntry<filterList>>[
+                  PopupMenuItem<filterList>(
+                    value: filterList.BBC,
+                    child: Text('BBC News'),
+                  ),
+                  PopupMenuItem<filterList>(
+                    value: filterList.ARY,
+                    child: Text('ARY News'),
+                  ),
+                  PopupMenuItem<filterList>(
+                    value: filterList.AlJazeera,
+                    child: Text('Al-Jazeera'),
+                  ),
+                  PopupMenuItem<filterList>(
+                    value: filterList.CNN,
+                    child: Text('CNN News'),
+                  ),
+                  PopupMenuItem<filterList>(
+                    value: filterList.reuters,
+                    child: Text('Reuter News'),
+                  ),
+            ]
+            )],
           leading: IconButton(
             onPressed: () {},
             icon: Image.asset(
@@ -44,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             SizedBox(height: height * 0.55, width: width,
               child: FutureBuilder<NewsHeadlineModel>(
-                  future: newsViewModel.FetchNews(),
+                  future: newsViewModel.FetchNews(name),
                   builder: (BuildContext context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
@@ -80,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   Positioned(
-                                    bottom:10,
+                                    bottom:20,
                                     child: Card(
                                       elevation:5,
                                       color:Colors.white,
